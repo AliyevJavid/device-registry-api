@@ -37,7 +37,7 @@ public class DeviceController {
 
     @PutMapping("/{id}")
     public DeviceResponseDTO updateDevice(@PathVariable Long id, @RequestBody @Valid DeviceRequestDTO deviceRequestDTO) {
-        return null;
+        return deviceService.updateDevice(id, deviceRequestDTO);
     }
 
     @PatchMapping("/{id}")

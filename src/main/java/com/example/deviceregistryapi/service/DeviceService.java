@@ -7,6 +7,7 @@ import com.example.deviceregistryapi.repository.DeviceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,7 +23,7 @@ public class DeviceService {
     public DeviceResponseDTO getDeviceById(Long id) {
         Device device = deviceRepository
                 .findById(id)
-                .orElseThrow(() -> new RuntimeException(String.format("Device with id %d not found", id)));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Device with id %d not found", id)));
         return new DeviceResponseDTO(device.getId(), device.getName(), device.getBrand(), device.getCreatedAt());
     }
 
@@ -34,5 +35,22 @@ public class DeviceService {
                         device.getName(),
                         device.getBrand(),
                         device.getCreatedAt()));
+    }
+
+    public DeviceResponseDTO updateDevice(Long id, DeviceRequestDTO deviceRequestDTO) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Device with id %d not found", id)));
+
+        device.setName(deviceRequestDTO.name());
+        device.setBrand(deviceRequestDTO.brand());
+
+        Device updatedDevice = deviceRepository.save(device);
+
+        return new DeviceResponseDTO(
+                updatedDevice.getId(),
+                updatedDevice.getName(),
+                updatedDevice.getBrand(),
+                updatedDevice.getCreatedAt()
+        );
     }
 }

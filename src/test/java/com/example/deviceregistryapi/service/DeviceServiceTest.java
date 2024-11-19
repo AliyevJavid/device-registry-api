@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -80,7 +81,7 @@ class DeviceServiceTest {
         Long deviceId = 1L;
         when(deviceRepository.findById(deviceId)).thenReturn(Optional.empty());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> deviceService.getDeviceById(deviceId));
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> deviceService.getDeviceById(deviceId));
         assertEquals("Device with id 1 not found", exception.getMessage());
 
         verify(deviceRepository, times(1)).findById(deviceId);
@@ -121,5 +122,48 @@ class DeviceServiceTest {
         assertNotNull(responseDTO2.createdAt());
 
         verify(deviceRepository, times(1)).findAll(pageable);
+    }
+
+    @Test
+    void updateDevice_shouldUpdateAndReturnDeviceResponseDTO_whenDeviceExists() {
+        Long deviceId = 1L;
+        DeviceRequestDTO requestDTO = new DeviceRequestDTO("Updated Device Name", "Updated Brand");
+
+        Device existingDevice = new Device("Old Device Name", "Old Brand");
+        existingDevice.setId(deviceId);
+        existingDevice.setCreatedAt(LocalDateTime.now());
+
+        Device updatedDevice = new Device("Updated Device Name", "Updated Brand");
+        updatedDevice.setId(deviceId);
+        updatedDevice.setCreatedAt(existingDevice.getCreatedAt());
+
+        when(deviceRepository.findById(deviceId)).thenReturn(Optional.of(existingDevice));
+        when(deviceRepository.save(existingDevice)).thenReturn(updatedDevice);
+
+        DeviceResponseDTO result = deviceService.updateDevice(deviceId, requestDTO);
+
+        assertNotNull(result);
+        assertEquals(deviceId, result.id());
+        assertEquals("Updated Device Name", result.name());
+        assertEquals("Updated Brand", result.brand());
+        assertEquals(existingDevice.getCreatedAt(), result.createdAt());
+
+        verify(deviceRepository, times(1)).findById(deviceId);
+        verify(deviceRepository, times(1)).save(existingDevice);
+    }
+
+    @Test
+    void updateDevice_shouldThrowResourceNotFoundException_whenDeviceDoesNotExist() {
+        Long deviceId = 1L;
+        DeviceRequestDTO requestDTO = new DeviceRequestDTO("Updated Device Name", "Updated Brand");
+
+        when(deviceRepository.findById(deviceId)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                deviceService.updateDevice(deviceId, requestDTO));
+        assertEquals("Device with id 1 not found", exception.getMessage());
+
+        verify(deviceRepository, times(1)).findById(deviceId);
+        verify(deviceRepository, never()).save(any());
     }
 }
