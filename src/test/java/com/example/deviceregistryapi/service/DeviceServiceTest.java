@@ -166,4 +166,13 @@ class DeviceServiceTest {
         verify(deviceRepository, times(1)).findById(deviceId);
         verify(deviceRepository, never()).save(any());
     }
+
+    @Test
+    void deleteDevice_shouldCallDeleteById() {
+        Long deviceId = 1L;
+
+        deviceService.deleteDevice(deviceId);
+
+        verify(deviceRepository, times(1)).deleteById(deviceId);
+    }
 }

@@ -53,4 +53,8 @@ public class DeviceService {
                 updatedDevice.getCreatedAt()
         );
     }
+
+    public void deleteDevice(Long id) {
+        deviceRepository.deleteById(id);
+    }
 }
