@@ -213,4 +213,43 @@ class DeviceServiceTest {
 
         verify(deviceRepository, times(1)).findAllByBrand(brand, pageable);
     }
+
+    @Test
+    void partialUpdateDevice_shouldUpdateNonNullFields_whenDeviceExists() {
+        Long deviceId = 1L;
+        DeviceRequestDTO requestDTO = new DeviceRequestDTO("Updated Device Name", null);
+
+        Device existingDevice = new Device("Old Device Name", "Existing Brand");
+        existingDevice.setId(deviceId);
+        existingDevice.setCreatedAt(LocalDateTime.now());
+
+        when(deviceRepository.findById(deviceId)).thenReturn(Optional.of(existingDevice));
+        when(deviceRepository.save(existingDevice)).thenReturn(existingDevice);
+
+        DeviceResponseDTO result = deviceService.partialUpdateDevice(deviceId, requestDTO);
+
+        assertNotNull(result);
+        assertEquals(deviceId, result.id());
+        assertEquals("Updated Device Name", result.name());
+        assertEquals("Existing Brand", result.brand());
+        assertNotNull(result.createdAt());
+
+        verify(deviceRepository, times(1)).findById(deviceId);
+        verify(deviceRepository, times(1)).save(existingDevice);
+    }
+
+    @Test
+    void partialUpdateDevice_shouldThrowResourceNotFoundException_whenDeviceDoesNotExist() {
+        Long deviceId = 1L;
+        DeviceRequestDTO requestDTO = new DeviceRequestDTO("Updated Device Name", "Updated Brand");
+
+        when(deviceRepository.findById(deviceId)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () ->
+                deviceService.partialUpdateDevice(deviceId, requestDTO));
+        assertEquals("Device with id 1 not found", exception.getMessage());
+
+        verify(deviceRepository, times(1)).findById(deviceId);
+        verify(deviceRepository, never()).save(any());
+    }
 }

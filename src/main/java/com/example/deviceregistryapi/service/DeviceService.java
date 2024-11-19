@@ -67,4 +67,25 @@ public class DeviceService {
                         device.getBrand(),
                         device.getCreatedAt()));
     }
+
+    public DeviceResponseDTO partialUpdateDevice(Long id, DeviceRequestDTO deviceRequestDTO) {
+        Device device = deviceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Device with id %d not found", id)));
+
+        if (deviceRequestDTO.name() != null && !deviceRequestDTO.name().isBlank()) {
+            device.setName(deviceRequestDTO.name());
+        }
+        if (deviceRequestDTO.brand() != null && !deviceRequestDTO.brand().isBlank()) {
+            device.setBrand(deviceRequestDTO.brand());
+        }
+
+        Device updatedDevice = deviceRepository.save(device);
+
+        return new DeviceResponseDTO(
+                updatedDevice.getId(),
+                updatedDevice.getName(),
+                updatedDevice.getBrand(),
+                updatedDevice.getCreatedAt()
+        );
+    }
 }

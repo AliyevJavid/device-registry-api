@@ -40,7 +40,7 @@ public class DeviceController {
 
     @PatchMapping("/{id}")
     public DeviceResponseDTO partialUpdateDevice(@PathVariable Long id, @RequestBody DeviceRequestDTO deviceRequestDTO) {
-        return null;
+        return deviceService.partialUpdateDevice(id, deviceRequestDTO);
     }
 
     @DeleteMapping("/{id}")
