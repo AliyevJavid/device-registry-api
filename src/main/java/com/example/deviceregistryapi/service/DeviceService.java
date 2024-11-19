@@ -5,6 +5,8 @@ import com.example.deviceregistryapi.dto.DeviceResponseDTO;
 import com.example.deviceregistryapi.model.Device;
 import com.example.deviceregistryapi.repository.DeviceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,5 +24,15 @@ public class DeviceService {
                 .findById(id)
                 .orElseThrow(() -> new RuntimeException(String.format("Device with id %d not found", id)));
         return new DeviceResponseDTO(device.getId(), device.getName(), device.getBrand(), device.getCreatedAt());
+    }
+
+    public Page<DeviceResponseDTO> listAllDevices(Pageable pageable) {
+        return deviceRepository
+                .findAll(pageable)
+                .map(device -> new DeviceResponseDTO(
+                        device.getId(),
+                        device.getName(),
+                        device.getBrand(),
+                        device.getCreatedAt()));
     }
 }

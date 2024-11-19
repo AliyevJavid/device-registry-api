@@ -5,6 +5,8 @@ import com.example.deviceregistryapi.dto.DeviceResponseDTO;
 import com.example.deviceregistryapi.service.DeviceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +31,8 @@ public class DeviceController {
     }
 
     @GetMapping
-    public List<DeviceResponseDTO> listAllDevices() {
-        return null;
+    public Page<DeviceResponseDTO> listAllDevices(Pageable pageable) {
+        return deviceService.listAllDevices(pageable);
     }
 
     @PutMapping("/{id}")
