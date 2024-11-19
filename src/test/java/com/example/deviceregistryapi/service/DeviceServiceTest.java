@@ -175,4 +175,42 @@ class DeviceServiceTest {
 
         verify(deviceRepository, times(1)).deleteById(deviceId);
     }
+
+    @Test
+    void getDevicesByBrand_shouldReturnPageOfDeviceResponseDTOs() {
+        String brand = "Brand TEST";
+        Pageable pageable = PageRequest.of(0, 10);
+        Device device1 = new Device("Device TEST1", "Brand TEST1");
+        device1.setId(1L);
+        device1.setCreatedAt(LocalDateTime.now());
+
+        Device device2 = new Device("Device TEST2", "Brand TEST1");
+        device2.setId(2L);
+        device2.setCreatedAt(LocalDateTime.now());
+
+        List<Device> devices = List.of(device1, device2);
+        Page<Device> devicePage = new PageImpl<>(devices, pageable, devices.size());
+
+        when(deviceRepository.findAllByBrand(brand, pageable)).thenReturn(devicePage);
+
+        Page<DeviceResponseDTO> result = deviceService.getDevicesByBrand(brand, pageable);
+
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        assertEquals(2, result.getContent().size());
+
+        DeviceResponseDTO responseDTO1 = result.getContent().get(0);
+        assertEquals(1L, responseDTO1.id());
+        assertEquals("Device TEST1", responseDTO1.name());
+        assertEquals("Brand TEST1", responseDTO1.brand());
+        assertNotNull(responseDTO1.createdAt());
+
+        DeviceResponseDTO responseDTO2 = result.getContent().get(1);
+        assertEquals(2L, responseDTO2.id());
+        assertEquals("Device TEST2", responseDTO2.name());
+        assertEquals("Brand TEST1", responseDTO2.brand());
+        assertNotNull(responseDTO2.createdAt());
+
+        verify(deviceRepository, times(1)).findAllByBrand(brand, pageable);
+    }
 }

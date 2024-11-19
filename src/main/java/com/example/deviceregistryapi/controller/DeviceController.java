@@ -10,8 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/devices")
 @RequiredArgsConstructor
@@ -52,8 +50,8 @@ public class DeviceController {
     }
 
     @GetMapping
-    public List<DeviceResponseDTO> getDevicesByBrand(@RequestParam String brand) {
-        return null;
+    public Page<DeviceResponseDTO> getDevicesByBrand(Pageable pageable, @RequestParam String brand) {
+        return deviceService.getDevicesByBrand(brand, pageable);
     }
 
 }

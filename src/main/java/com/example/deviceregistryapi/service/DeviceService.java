@@ -57,4 +57,14 @@ public class DeviceService {
     public void deleteDevice(Long id) {
         deviceRepository.deleteById(id);
     }
+
+    public Page<DeviceResponseDTO> getDevicesByBrand(String brand, Pageable pageable) {
+        return deviceRepository
+                .findAllByBrand(brand, pageable)
+                .map(device -> new DeviceResponseDTO(
+                        device.getId(),
+                        device.getName(),
+                        device.getBrand(),
+                        device.getCreatedAt()));
+    }
 }
