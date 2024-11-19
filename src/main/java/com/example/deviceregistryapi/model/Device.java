@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -18,14 +19,14 @@ public class Device {
     private Long id;
     private String name;
     private String brand;
-    private LocalDateTime creationTime;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     public Device() {
     }
 
-    public Device(String name, String brand, LocalDateTime creationTime) {
+    public Device(String name, String brand) {
         this.name = name;
         this.brand = brand;
-        this.creationTime = creationTime;
     }
 }

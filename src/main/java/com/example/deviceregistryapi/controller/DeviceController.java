@@ -20,7 +20,7 @@ public class DeviceController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public DeviceResponseDTO addDevice(@RequestBody @Valid DeviceRequestDTO deviceRequestDTO) {
-        return null;
+        return deviceService.addDevice(deviceRequestDTO);
     }
 
     @GetMapping("/{id}")
