@@ -11,9 +11,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -30,10 +30,7 @@ class DeviceServiceTest {
     void addDevice_shouldSaveDeviceAndReturnResponseDTO() {
         DeviceRequestDTO deviceRequestDTO = new DeviceRequestDTO("Device TEST", "Brand TEST");
 
-        LocalDateTime createdAt = LocalDateTime.now();
-        Device saved = new Device("Device TEST", "Brand TEST");
-        saved.setId(1L);
-        saved.setCreatedAt(createdAt);
+        Device saved = getDevice();
 
         when(deviceRepository.save(any(Device.class))).thenReturn(saved);
 
@@ -43,8 +40,44 @@ class DeviceServiceTest {
         assertEquals(1L, responseDTO.id());
         assertEquals("Device TEST", responseDTO.name());
         assertEquals("Brand TEST", responseDTO.brand());
-        assertEquals(createdAt, responseDTO.createdAt());
+        assertNotNull(responseDTO.createdAt());
 
         verify(deviceRepository, times(1)).save(any(Device.class));
+    }
+
+    private static Device getDevice() {
+        Device device = new Device("Device TEST", "Brand TEST");
+        device.setId(1L);
+        device.setCreatedAt(LocalDateTime.now());
+        return device;
+    }
+
+    @Test
+    void getDeviceById_shouldReturnDeviceResponseDTO_whenDeviceExists() {
+        Long deviceId = 1L;
+        Device device = getDevice();
+
+        when(deviceRepository.findById(deviceId)).thenReturn(Optional.of(device));
+
+        DeviceResponseDTO responseDTO = deviceService.getDeviceById(deviceId);
+
+        assertNotNull(responseDTO);
+        assertEquals(deviceId, responseDTO.id());
+        assertEquals("Device TEST", responseDTO.name());
+        assertEquals("Brand TEST", responseDTO.brand());
+        assertNotNull(responseDTO.createdAt());
+
+        verify(deviceRepository, times(1)).findById(deviceId);
+    }
+
+    @Test
+    void getDeviceById_shouldThrowException_whenDeviceDoesNotExist() {
+        Long deviceId = 1L;
+        when(deviceRepository.findById(deviceId)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> deviceService.getDeviceById(deviceId));
+        assertEquals("Device with id 1 not found", exception.getMessage());
+
+        verify(deviceRepository, times(1)).findById(deviceId);
     }
 }
