@@ -7,6 +7,9 @@ import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a device entity stored in the database.
+ */
 @Entity
 @Getter
 @Setter
