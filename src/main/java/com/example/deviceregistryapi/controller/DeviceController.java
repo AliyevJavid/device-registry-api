@@ -49,8 +49,8 @@ public class DeviceController {
         deviceService.deleteDevice(id);
     }
 
-    @GetMapping
-    public Page<DeviceResponseDTO> getDevicesByBrand(Pageable pageable, @RequestParam String brand) {
+    @GetMapping("/search")
+    public Page<DeviceResponseDTO> getDevicesByBrand(@RequestParam String brand, Pageable pageable) {
         return deviceService.getDevicesByBrand(brand, pageable);
     }
 

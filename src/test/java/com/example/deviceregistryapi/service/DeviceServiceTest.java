@@ -2,6 +2,7 @@ package com.example.deviceregistryapi.service;
 
 import com.example.deviceregistryapi.dto.DeviceRequestDTO;
 import com.example.deviceregistryapi.dto.DeviceResponseDTO;
+import com.example.deviceregistryapi.exception.ResourceNotFoundException;
 import com.example.deviceregistryapi.model.Device;
 import com.example.deviceregistryapi.repository.DeviceRepository;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;

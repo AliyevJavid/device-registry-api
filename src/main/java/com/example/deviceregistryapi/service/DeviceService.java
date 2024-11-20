@@ -2,12 +2,12 @@ package com.example.deviceregistryapi.service;
 
 import com.example.deviceregistryapi.dto.DeviceRequestDTO;
 import com.example.deviceregistryapi.dto.DeviceResponseDTO;
+import com.example.deviceregistryapi.exception.ResourceNotFoundException;
 import com.example.deviceregistryapi.model.Device;
 import com.example.deviceregistryapi.repository.DeviceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
