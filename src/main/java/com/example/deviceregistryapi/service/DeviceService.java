@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This service handles all operations related to devices.
@@ -27,7 +28,7 @@ public class DeviceService {
      */
     public DeviceResponseDTO addDevice(DeviceRequestDTO deviceRequestDTO) {
         Device saved = deviceRepository.save(new Device(deviceRequestDTO.name(), deviceRequestDTO.brand()));
-        return new DeviceResponseDTO(saved.getId(), saved.getName(), saved.getBrand(), saved.getCreatedAt());
+        return new DeviceResponseDTO(saved);
     }
 
     /**
@@ -41,7 +42,7 @@ public class DeviceService {
         Device device = deviceRepository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Device with id %d not found", id)));
-        return new DeviceResponseDTO(device.getId(), device.getName(), device.getBrand(), device.getCreatedAt());
+        return new DeviceResponseDTO(device);
     }
 
     /**
@@ -51,13 +52,7 @@ public class DeviceService {
      * @return a page of devices (type: {@link Page}<{@link DeviceResponseDTO}>)
      */
     public Page<DeviceResponseDTO> listAllDevices(Pageable pageable) {
-        return deviceRepository
-                .findAll(pageable)
-                .map(device -> new DeviceResponseDTO(
-                        device.getId(),
-                        device.getName(),
-                        device.getBrand(),
-                        device.getCreatedAt()));
+        return deviceRepository.findAll(pageable).map(DeviceResponseDTO::new);
     }
 
     /**
@@ -67,6 +62,7 @@ public class DeviceService {
      * @param deviceRequestDTO the new data for the device (type: {@link DeviceRequestDTO})
      * @return the updated device data (type: {@link DeviceResponseDTO})
      */
+    @Transactional
     public DeviceResponseDTO updateDevice(Long id, DeviceRequestDTO deviceRequestDTO) {
         Device device = deviceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Device with id %d not found", id)));
@@ -76,12 +72,7 @@ public class DeviceService {
 
         Device updatedDevice = deviceRepository.save(device);
 
-        return new DeviceResponseDTO(
-                updatedDevice.getId(),
-                updatedDevice.getName(),
-                updatedDevice.getBrand(),
-                updatedDevice.getCreatedAt()
-        );
+        return new DeviceResponseDTO(updatedDevice);
     }
 
     /**
@@ -101,13 +92,7 @@ public class DeviceService {
      * @return a page of devices matching the brand (type: {@link Page}<{@link DeviceResponseDTO}>)
      */
     public Page<DeviceResponseDTO> getDevicesByBrand(String brand, Pageable pageable) {
-        return deviceRepository
-                .findAllByBrand(brand, pageable)
-                .map(device -> new DeviceResponseDTO(
-                        device.getId(),
-                        device.getName(),
-                        device.getBrand(),
-                        device.getCreatedAt()));
+        return deviceRepository.findAllByBrand(brand, pageable).map(DeviceResponseDTO::new);
     }
 
     /**
@@ -117,6 +102,7 @@ public class DeviceService {
      * @param deviceRequestDTO the partial data to update (type: {@link DeviceRequestDTO})
      * @return the updated device data (type: {@link DeviceResponseDTO})
      */
+    @Transactional
     public DeviceResponseDTO partialUpdateDevice(Long id, DeviceRequestDTO deviceRequestDTO) {
         Device device = deviceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Device with id %d not found", id)));
@@ -130,11 +116,6 @@ public class DeviceService {
 
         Device updatedDevice = deviceRepository.save(device);
 
-        return new DeviceResponseDTO(
-                updatedDevice.getId(),
-                updatedDevice.getName(),
-                updatedDevice.getBrand(),
-                updatedDevice.getCreatedAt()
-        );
+        return new DeviceResponseDTO(updatedDevice);
     }
 }
